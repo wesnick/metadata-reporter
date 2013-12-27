@@ -12,29 +12,30 @@ class HtmlCoreAttributeCollectorTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Crawler
+     * @var HtmlCoreAttributeCollector
      */
-    private $crawler;
+    private $collector;
 
     public function setUp()
     {
-        $html = file_get_contents(__DIR__ . '/../../../fixtures/html/html-core-1.html');
-        $this->crawler = new Crawler($html);
+        $html = file_get_contents(__DIR__ . '/../../../fixtures/html/html-meta-1.html');
+        $crawler = new Crawler($html);
+        $this->collector = new HtmlCoreAttributeCollector();
+        $this->collector->collect($crawler, array());
     }
 
     public function tearDown()
     {
-        $this->crawler = null;
+        $this->collector = null;
     }
 
     public function testCollection()
     {
-        $collector = new HtmlCoreAttributeCollector();
-        $metadata = $collector->collect($this->crawler, array());
-        $x = 'y';
 
 
+        $metadata = $this->collector->getMetadata();
 
+        $this->assertCount(9, $metadata);
     }
 
 }

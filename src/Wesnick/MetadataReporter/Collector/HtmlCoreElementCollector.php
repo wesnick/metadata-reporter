@@ -20,7 +20,6 @@ class HtmlCoreElementCollector implements MetadataCollectorInterface
     /**
      * @param Crawler $content
      * @param array $headers
-     * @return Metadatum[]
      */
     public function collect(Crawler $content, array $headers)
     {
@@ -28,9 +27,6 @@ class HtmlCoreElementCollector implements MetadataCollectorInterface
         $head = $content->filter('head');
 
         $this->processTitle($head);
-
-        return $this->metadata;
-
     }
 
     /**
@@ -38,7 +34,7 @@ class HtmlCoreElementCollector implements MetadataCollectorInterface
      *
      * @return array
      */
-    public function getTargetNames()
+    public function getMetadataNames()
     {
         return array(
             static::HTML_DOCTYPE                => 'HTML DocType',
@@ -47,10 +43,38 @@ class HtmlCoreElementCollector implements MetadataCollectorInterface
         );
     }
 
+    /**
+     * @TODO
+     * @param Crawler $content
+     */
+    private function processDocType(Crawler $content)
+    {
+//        $this->metadata[] =new Metadatum(static::HTML_HEAD_TITLE, $content->filter('title')->text());
+    }
 
     private function processTitle(Crawler $head)
     {
-        $this->metadata[] =new Metadatum('html.head.title', $head->filter('title')->text());
+        $this->metadata[] =new Metadatum(static::HTML_HEAD_TITLE, $head->filter('title')->text());
+    }
+
+    /**
+     * Return targeted metadata.
+     *
+     * @return Metadatum[]
+     */
+    public function getMetadata()
+    {
+        return $this->metadata;
+    }
+
+    /**
+     * If a collector collects other types of metadata it is not targeting, it may return them here.
+     *
+     * @return Metadatum[]
+     */
+    public function getExtraMetadata()
+    {
+        return array();
     }
 
 

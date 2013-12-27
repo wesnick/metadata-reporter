@@ -4,7 +4,8 @@
     "require": {
         "kriswallsmith/buzz": "dev-master",
         "symfony/dom-crawler": "2.4.*@dev",
-        "symfony/css-selector": "2.4.*@dev"
+        "symfony/css-selector": "2.4.*@dev",
+        "doctrine/collections": "dev-master"
     },
     "license": "MIT",
     "authors": [
