@@ -1,0 +1,22 @@
+{
+    "name": "wesnick/metadata-reporter",
+    "description": "Report on Metadata Usage for Web Documents",
+    "require": {
+        "kriswallsmith/buzz": "dev-master",
+        "symfony/dom-crawler": "2.4.*@dev",
+        "symfony/css-selector": "2.4.*@dev"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wesley O. Nichols",
+            "email": "wesley.o.nichols@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}
