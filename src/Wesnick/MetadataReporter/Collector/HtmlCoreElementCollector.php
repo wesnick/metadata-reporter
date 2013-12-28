@@ -1,47 +1,36 @@
 <?php
-/**
- * @file HtmlCoreElementCollector.php
- */
 
 namespace Wesnick\MetadataReporter\Collector;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\DomCrawler\Crawler;
-use Wesnick\MetadataReporter\Metadata\Metadatum;
+use Wesnick\MetadataReporter\Metadata\DocTitle;
 
-class HtmlCoreElementCollector implements MetadataCollectorInterface
+class HtmlCoreElementCollector implements CollectorInterface
 {
 
-    const HTML_DOCTYPE      = 'html.doctype';
-    const HTML_HEAD_TITLE   = 'html.head.title';
 
+    /**
+     * @var ArrayCollection
+     */
     private $metadata;
 
     /**
+     * @param $uri
      * @param Crawler $content
      * @param array $headers
      */
-    public function collect(Crawler $content, array $headers)
+    public function collect($uri, Crawler $content, array $headers)
     {
-        $this->metadata = array();
+        $this->metadata = new ArrayCollection();
+        $this->processDocType($content);
         $head = $content->filter('head');
 
         $this->processTitle($head);
     }
 
-    /**
-     * Return an array of names of metadata this collector collects
-     *
-     * @return array
-     */
-    public function getMetadataNames()
-    {
-        return array(
-            static::HTML_DOCTYPE                => 'HTML DocType',
-            static::HTML_HEAD_TITLE             => 'Page Title',
 
-        );
-    }
 
     /**
      * @TODO
@@ -49,33 +38,26 @@ class HtmlCoreElementCollector implements MetadataCollectorInterface
      */
     private function processDocType(Crawler $content)
     {
+        $docType = $content->getNode(0)->ownerDocument->doctype;
+
 //        $this->metadata[] =new Metadatum(static::HTML_HEAD_TITLE, $content->filter('title')->text());
     }
 
     private function processTitle(Crawler $head)
     {
-        $this->metadata[] =new Metadatum(static::HTML_HEAD_TITLE, $head->filter('title')->text());
+        $this->metadata[] = new DocTitle($head->filter('title')->text());
     }
 
     /**
      * Return targeted metadata.
      *
-     * @return Metadatum[]
+     * @return ArrayCollection
      */
     public function getMetadata()
     {
         return $this->metadata;
     }
 
-    /**
-     * If a collector collects other types of metadata it is not targeting, it may return them here.
-     *
-     * @return Metadatum[]
-     */
-    public function getExtraMetadata()
-    {
-        return array();
-    }
 
 
 } 
