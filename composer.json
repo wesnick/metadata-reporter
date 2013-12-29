@@ -5,7 +5,9 @@
         "kriswallsmith/buzz": "dev-master",
         "symfony/dom-crawler": "2.4.*@dev",
         "symfony/css-selector": "2.4.*@dev",
-        "doctrine/collections": "dev-master"
+        "doctrine/collections": "dev-master",
+        "symfony/console": "2.4.*@dev",
+        "tecnick.com/tcpdf": "dev-master"
     },
     "license": "MIT",
     "authors": [

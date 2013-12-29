@@ -10,6 +10,11 @@ class Reporter implements ReporterInterface
 {
 
     /**
+     * @var string
+     */
+    protected $uri;
+
+    /**
      * @var int
      */
     protected $level;
@@ -34,10 +39,11 @@ class Reporter implements ReporterInterface
      */
     protected $data;
 
-    function __construct($label, $description, $level = ReporterInterface::LEVEL_INFO, $categories = array(), $data = array())
+    function __construct($label, $description, $uri, $categories = array(), $data = array(), $level = ReporterInterface::LEVEL_INFO)
     {
         $this->label = $label;
         $this->description = $description;
+        $this->uri;
         $this->level = $level;
         $this->categories = $categories;
         $this->data = $data;
@@ -82,6 +88,14 @@ class Reporter implements ReporterInterface
     public function getCategories()
     {
         return $this->categories;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
     }
 
 

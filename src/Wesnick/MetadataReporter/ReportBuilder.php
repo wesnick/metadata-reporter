@@ -53,7 +53,9 @@ class ReportBuilder
 
         foreach ($this->getEvaluators() as $evaluator) {
             $evaluator->evaluate($uri, $metadata);
-            $this->reporters->add($evaluator->getReporters());
+            foreach ($evaluator->getReporters()->getValues() as $value) {
+                $this->reporters->add($value);
+            }
         }
 
     }

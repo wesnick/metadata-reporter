@@ -9,7 +9,7 @@ namespace Wesnick\MetadataReporter\Evaluator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Wesnick\MetadataReporter\Reporter\ReporterInterface;
 
-class BasicPageInfoEvaluator implements EvaluatorInterface
+class BasicPageInfoEvaluator extends BaseEvaluator
 {
     const HTML_META_CHARSET                 = 'html.meta.charset.character_set';
     const HTML_META_CONTENT_TEXT            = 'html.meta.content.text' ;
@@ -31,16 +31,6 @@ class BasicPageInfoEvaluator implements EvaluatorInterface
     public function evaluate($uri, ArrayCollection $metadata)
     {
         // TODO: Implement evaluate() method.
-    }
-
-    /**
-     * Return evaluations/reports.
-     *
-     * @return ReporterInterface
-     */
-    public function getReporters()
-    {
-        // TODO: Implement getReporters() method.
     }
 
 

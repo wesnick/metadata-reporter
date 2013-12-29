@@ -13,6 +13,10 @@ interface ReporterInterface
     const LEVEL_WARNING = 'warn';
     const LEVEL_ERROR   = 'error';
 
+    /**
+     * @return string
+     */
+    public function getUri();
 
     /**
      * @return string
