@@ -19,10 +19,13 @@ class LinkElement extends Link implements MetaDatumInterface
     protected $rel;
     protected $type;
 
-    public function __construct(\DOMNode $node, $currentUri, $method = 'GET')
+    protected $documentLocation;
+
+    public function __construct(\DOMNode $node, $currentUri, $method = 'GET', $location = MetaDatumInterface::CONTENT_BODY)
     {
         parent::__construct($node, $currentUri, $method);
         $this->processAttributes($node);
+        $this->documentLocation = $location;
     }
 
 
@@ -55,7 +58,7 @@ class LinkElement extends Link implements MetaDatumInterface
 
     public function getDocumentLocation()
     {
-        // TODO: Implement getDocumentLocation() method.
+        return $this->documentLocation;
     }
 
     /**

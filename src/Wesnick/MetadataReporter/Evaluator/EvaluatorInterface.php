@@ -3,10 +3,10 @@
  * @file EvaluatorInterface.php
  */
 
-namespace Wesnick\Evaluator;
-
+namespace Wesnick\MetadataReporter\Evaluator;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Wesnick\MetadataReporter\Reporter\ReporterInterface;
 
 interface EvaluatorInterface
 {
@@ -14,15 +14,14 @@ interface EvaluatorInterface
     /**
      * @param $uri
      * @param \Doctrine\Common\Collections\ArrayCollection $metadata
-     * @return
      */
     public function evaluate($uri, ArrayCollection $metadata);
 
     /**
-     * Return metadata.
+     * Return evaluations/reports.
      *
-     * @return ArrayCollection
+     * @return ReporterInterface
      */
-    public function getEvaluations();
+    public function getReporters();
 
 } 

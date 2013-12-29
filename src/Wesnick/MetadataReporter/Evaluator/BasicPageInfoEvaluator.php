@@ -3,10 +3,13 @@
  * @file BasicPageInfoEvaluator.php
  */
 
-namespace Wesnick\Evaluator;
+namespace Wesnick\MetadataReporter\Evaluator;
 
 
-class BasicPageInfoEvaluator
+use Doctrine\Common\Collections\ArrayCollection;
+use Wesnick\MetadataReporter\Reporter\ReporterInterface;
+
+class BasicPageInfoEvaluator implements EvaluatorInterface
 {
     const HTML_META_CHARSET                 = 'html.meta.charset.character_set';
     const HTML_META_CONTENT_TEXT            = 'html.meta.content.text' ;
@@ -20,6 +23,25 @@ class BasicPageInfoEvaluator
     const HTML_META_ROBOTS                  = 'html.meta.robots' ;
     const HTML_META_APPLICATION_NAME        = 'html.meta.application-name' ;
     const HTML_META_SCHEME                  = 'html.meta.scheme.format-uri' ;
+
+    /**
+     * @param $uri
+     * @param \Doctrine\Common\Collections\ArrayCollection $metadata
+     */
+    public function evaluate($uri, ArrayCollection $metadata)
+    {
+        // TODO: Implement evaluate() method.
+    }
+
+    /**
+     * Return evaluations/reports.
+     *
+     * @return ReporterInterface
+     */
+    public function getReporters()
+    {
+        // TODO: Implement getReporters() method.
+    }
 
 
 } 

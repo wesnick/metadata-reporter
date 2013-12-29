@@ -3,17 +3,14 @@
 namespace Wesnick\MetadataReporter;
 
 
-use Buzz\Browser;
-use Buzz\Message\Response;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\DomCrawler\Crawler;
-use Wesnick\Evaluator\EvaluatorInterface;
 use Wesnick\MetadataReporter\Collector\CollectorInterface;
-use Wesnick\MetadataReporter\Collector\MetaTagCollector;
+use Wesnick\MetadataReporter\Evaluator\EvaluatorInterface;
+use Wesnick\MetadataReporter\Formatter\FormatterInterface;
 
 class ReportBuilder
 {
-
 
     /**
      * @var EvaluatorInterface[]
@@ -25,6 +22,10 @@ class ReportBuilder
      */
     protected $collectors;
 
+    /**
+     * @var ArrayCollection
+     */
+    protected $reporters;
 
     /**
      * @param CollectorInterface $collector
@@ -34,35 +35,12 @@ class ReportBuilder
         $this->collectors[get_class($collector)] = $collector;
     }
 
-
-
     public function doReport($uri, $headers, $content)
     {
-
-//        $this->browser = new Browser();
-//        $response = $this->browser->get("http://nytimes.com");
-
-//        file_put_contents('/home/wes/www/metadata-reporter/nytimes.response', serialize($response));
-
-
-//        /** @var $response Response */
-//        $response = unserialize(file_get_contents('/home/wes/www/metadata-reporter/nytimes.response'));
-//
-//
-//
-//        file_put_contents('/home/wes/www/metadata-reporter/nytimes.response', serialize($response));
-
-
-//        $dom = new \DOMDocument('1.0');
-//        $dom->formatOutput = true;
-//        @$dom->loadHTML($response->getContent());
-//        $dom->saveHTMLFile('/home/wes/www/metadata-reporter/nytimes.html');
-//       $collector->collect($content, $response->getHeaders());
-
-
-        $crawler = new Crawler($content);
+        $crawler = new Crawler($content, $uri);
 
         $metadata = new ArrayCollection();
+
         /** @var $collector CollectorInterface */
         foreach ($this->getCollectors() as $collector) {
             $collector->collect($uri, $crawler, $headers);
@@ -71,18 +49,17 @@ class ReportBuilder
             }
         }
 
+        $this->reporters = new ArrayCollection();
+
         foreach ($this->getEvaluators() as $evaluator) {
             $evaluator->evaluate($uri, $metadata);
-            $reports = $evaluator->getEvaluations();
+            $this->reporters->add($evaluator->getReporters());
         }
-
-
-        return $reports;
 
     }
 
     /**
-     * @param \Wesnick\MetadataReporter\Collector\CollectorInterface[] $collectors
+     * @param CollectorInterface[] $collectors
      */
     public function setCollectors($collectors)
     {
@@ -90,7 +67,7 @@ class ReportBuilder
     }
 
     /**
-     * @param \Wesnick\Evaluator\EvaluatorInterface[] $evaluators
+     * @param EvaluatorInterface[] $evaluators
      */
     public function setEvaluators($evaluators)
     {
@@ -108,11 +85,18 @@ class ReportBuilder
 
 
     /**
-     * @return \Wesnick\Evaluator\EvaluatorInterface[]
+     * @return EvaluatorInterface[]
      */
     public function getEvaluators()
     {
         return $this->evaluators;
+    }
+
+
+    public function format(FormatterInterface $formatter)
+    {
+        $formatter->setReporters($this->reporters);
+        return $formatter->format();
     }
 
 

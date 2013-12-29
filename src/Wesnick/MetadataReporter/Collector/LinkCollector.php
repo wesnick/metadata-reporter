@@ -28,8 +28,15 @@ class LinkCollector implements CollectorInterface
         $links = $content->filter('link');
 
         /** @var $link \DOMElement */
-        foreach ($links as $index => $link) {
-            $this->metadata[] = new LinkElement($link, "http://localhost/url");
+        foreach ($links as $link) {
+            $this->metadata->add(new LinkElement($link, $uri));
+        }
+
+        $links = $content->filter('a');
+
+        /** @var $link \DOMElement */
+        foreach ($links as $link) {
+            $this->metadata->add(new LinkElement($link, $uri));
         }
     }
 

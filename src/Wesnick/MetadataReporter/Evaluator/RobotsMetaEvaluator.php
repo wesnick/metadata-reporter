@@ -3,10 +3,12 @@
  * @file RobotsMetaEvaluator.php
  */
 
-namespace Wesnick\Evaluator;
+namespace Wesnick\MetadataReporter\Evaluator;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Wesnick\MetadataReporter\Reporter\ReporterInterface;
 
-class RobotsMetaEvaluator
+class RobotsMetaEvaluator implements EvaluatorInterface
 {
 
     protected static $codes = array(
@@ -26,5 +28,25 @@ class RobotsMetaEvaluator
         'msnbot'    => 'Bing Bot',
         'teoma'     => 'Ask',
     );
+
+    /**
+     * @param $uri
+     * @param \Doctrine\Common\Collections\ArrayCollection $metadata
+     */
+    public function evaluate($uri, ArrayCollection $metadata)
+    {
+        // TODO: Implement evaluate() method.
+    }
+
+    /**
+     * Return evaluations/reports.
+     *
+     * @return ReporterInterface
+     */
+    public function getReporters()
+    {
+        // TODO: Implement getReporters() method.
+    }
+
 
 } 
