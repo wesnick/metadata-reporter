@@ -6,97 +6,103 @@
 namespace Wesnick\MetadataReporter\Reporter;
 
 
-class Reporter implements ReporterInterface
+use Doctrine\Common\Collections\ArrayCollection;
+use Wesnick\MetadataReporter\Metadata\MetaDatumInterface;
+
+class Reporter
 {
 
     /**
-     * @var string
+     * @var ArrayCollection
      */
-    protected $uri;
+    protected $reporters;
 
     /**
-     * @var int
-     */
-    protected $level;
-
-    /**
-     * @var string
-     */
-    protected $label;
-
-    /**
-     * @var string
-     */
-    protected $description;
-
-    /**
+     * Key is URI and value is URI title
      * @var array
      */
-    protected $categories;
+    protected $uriMap;
 
-    /**
-     * @var array
-     */
-    protected $data;
 
-    function __construct($label, $description, $uri, $categories = array(), $data = array(), $level = ReporterInterface::LEVEL_INFO)
+    function __construct()
     {
-        $this->label = $label;
-        $this->description = $description;
-        $this->uri;
-        $this->level = $level;
-        $this->categories = $categories;
-        $this->data = $data;
+        $this->reporters = new ArrayCollection();
+    }
 
+    public function info($label, $description, $uri, $categories, $data = array())
+    {
+        $this->report($label, $description, $uri, $categories, $data, ReportInterface::LEVEL_INFO);
+    }
+
+    public function warn($label, $description, $uri, $categories, $data = array())
+    {
+        $this->report($label, $description, $uri, $categories, $data, ReportInterface::LEVEL_WARNING);
+    }
+
+    public function error($label, $description, $uri, $categories, $data = array())
+    {
+        $this->report($label, $description, $uri, $categories, $data, ReportInterface::LEVEL_ERROR);
+    }
+
+    public function report($label, $description, $uri, $categories, $data, $level)
+    {
+        $this->reporters->add(new Report($label, $description, $uri, $categories, $data, $level));
     }
 
     /**
-     * @return array
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
-    public function getData()
+    public function getReporters()
     {
-        return $this->data;
+        return $this->reporters;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
-
-    /**
-     * @return array
-     */
     public function getCategories()
     {
-        return $this->categories;
+        $categories = array();
+        /** @var $report ReportInterface */
+        foreach ($this->reporters->toArray() as $report) {
+            foreach ($report->getCategories() as $category) {
+                if ( ! array_key_exists($category, $categories)) {
+                    $categories[$category] = $category;
+                }
+            }
+        }
+
+        return $categories;
     }
 
     /**
-     * @return string
+     * @param $uri
+     * @return \Doctrine\Common\Collections\ArrayCollection
      */
-    public function getUri()
+    public function getReportersForUri($uri)
     {
-        return $this->uri;
+        return $this->reporters->filter(function (ReportInterface $r) use ($uri) { return $r->getUri() == $uri; });
     }
 
+    /**
+     * @param $name
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function getReportersForCategory($name)
+    {
+        return $this->reporters->filter(function (ReportInterface $r) use ($name) { return in_array($name, $r->getCategories()); });
+    }
+
+    /**
+     * @param $level
+     * @return \Doctrine\Common\Collections\ArrayCollection
+     */
+    public function getReportersForLevel($level)
+    {
+        return $this->reporters->filter(function (ReportInterface $r) use ($level) { return $level == $r->getLevel(); });
+    }
+
+
+    public function setTitleForUri($uri, $title)
+    {
+        $this->uriMap[$uri] = $title;
+    }
 
 } 

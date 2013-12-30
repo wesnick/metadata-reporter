@@ -6,7 +6,7 @@
 namespace Wesnick\MetadataReporter\Reporter;
 
 
-interface ReporterInterface
+interface ReportInterface
 {
 
     const LEVEL_INFO    = 'info';

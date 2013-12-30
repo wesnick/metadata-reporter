@@ -7,30 +7,44 @@ namespace Wesnick\MetadataReporter\Evaluator;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Wesnick\MetadataReporter\Reporter\ReporterInterface;
+use Wesnick\MetadataReporter\Metadata\LinkElement;
+use Wesnick\MetadataReporter\Metadata\MetaDatumInterface;
+use Wesnick\MetadataReporter\Metadata\MetaTag;
+use Wesnick\MetadataReporter\Reporter\Reporter;
 
 abstract class BaseEvaluator implements EvaluatorInterface
 {
+    /**
+     * @var Reporter
+     */
+    protected $reporter;
 
     /**
-     * @var ArrayCollection
+     * @param Reporter $reporter
      */
-    protected $reporters;
-
-    function __construct()
+    public function setReporter(Reporter $reporter)
     {
-        $this->reporters = new ArrayCollection();
+        $this->reporter = $reporter;
     }
 
     /**
-     * Return evaluations/reports.
-     *
-     * @return ReporterInterface
+     * @param ArrayCollection $metadata
+     * @param $target
+     * @return ArrayCollection
      */
-    public function getReporters()
+    protected function getMetaTagFor(ArrayCollection $metadata, $target)
     {
-        return $this->reporters;
+        $filter = function (MetaDatumInterface $m) use ($target) { return ($m instanceof MetaTag && $m->getName() == $target); };
+        return $metadata->filter($filter);
     }
 
+    protected function getAnchorTagsByAttribute(ArrayCollection $metadata, $attrName, $attrValue)
+    {
+        $attrGetter = 'get' . ucfirst($attrName);
+
+        $filter = function (MetaDatumInterface $m) use ($attrGetter, $attrValue) { return $m instanceof LinkElement && call_user_func(array($m, $attrGetter)) == $attrValue; };
+        return $metadata->filter($filter);
+
+    }
 
 }

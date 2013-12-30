@@ -6,12 +6,12 @@
 namespace Wesnick\MetadataReporter\Formatter;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Wesnick\MetadataReporter\Reporter\Reporter;
 
 interface FormatterInterface
 {
 
-    public function setReporters(ArrayCollection $reporters);
+    public function setReporter(Reporter $reporters);
     public function format();
 
 } 

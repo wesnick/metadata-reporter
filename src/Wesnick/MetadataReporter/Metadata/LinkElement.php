@@ -17,7 +17,7 @@ class LinkElement extends Link implements MetaDatumInterface
     protected $tag;
     protected $href;
     protected $rel;
-    protected $type;
+    protected $mimeType;
 
     protected $documentLocation;
 
@@ -88,9 +88,9 @@ class LinkElement extends Link implements MetaDatumInterface
     /**
      * @return mixed
      */
-    public function getType()
+    public function getMimeType()
     {
-        return $this->type;
+        return $this->mimeType;
     }
 
 

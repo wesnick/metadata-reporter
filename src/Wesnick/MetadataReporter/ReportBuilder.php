@@ -8,6 +8,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Wesnick\MetadataReporter\Collector\CollectorInterface;
 use Wesnick\MetadataReporter\Evaluator\EvaluatorInterface;
 use Wesnick\MetadataReporter\Formatter\FormatterInterface;
+use Wesnick\MetadataReporter\Reporter\Reporter;
 
 class ReportBuilder
 {
@@ -23,9 +24,26 @@ class ReportBuilder
     protected $collectors;
 
     /**
+     * @var Reporter
+     */
+    protected $reporter;
+
+    /**
      * @var ArrayCollection
      */
-    protected $reporters;
+    protected $metadata;
+
+    function __construct(Reporter $reporter = null, $collectors = array(), $evaluators = array())
+    {
+        $this->collectors = $collectors;
+        $this->evaluators = $evaluators;
+        $this->metadata = new ArrayCollection();
+        if ( ! $reporter instanceof Reporter) {
+            $reporter = new Reporter();
+        }
+        $this->reporter = $reporter;
+    }
+
 
     /**
      * @param CollectorInterface $collector
@@ -35,27 +53,29 @@ class ReportBuilder
         $this->collectors[get_class($collector)] = $collector;
     }
 
+    /**
+     * @param EvaluatorInterface $evaluator
+     */
+    public function addEvaluator(EvaluatorInterface $evaluator)
+    {
+        $evaluator->setReporter($this->reporter);
+        $this->evaluators[get_class($evaluator)] = $evaluator;
+    }
+
     public function doReport($uri, $headers, $content)
     {
         $crawler = new Crawler($content, $uri);
-
-        $metadata = new ArrayCollection();
 
         /** @var $collector CollectorInterface */
         foreach ($this->getCollectors() as $collector) {
             $collector->collect($uri, $crawler, $headers);
             foreach ($collector->getMetadata()->getValues() as $value) {
-                $metadata->add($value);
+                $this->metadata->add($value);
             }
         }
 
-        $this->reporters = new ArrayCollection();
-
         foreach ($this->getEvaluators() as $evaluator) {
-            $evaluator->evaluate($uri, $metadata);
-            foreach ($evaluator->getReporters()->getValues() as $value) {
-                $this->reporters->add($value);
-            }
+            $evaluator->evaluate($uri, $this->metadata);
         }
 
     }
@@ -63,17 +83,23 @@ class ReportBuilder
     /**
      * @param CollectorInterface[] $collectors
      */
-    public function setCollectors($collectors)
+    public function setCollectors(array $collectors)
     {
-        $this->collectors = $collectors;
+        $this->collectors = array();
+        foreach ($collectors as $collector) {
+            $this->addCollector($collector);
+        }
     }
 
     /**
      * @param EvaluatorInterface[] $evaluators
      */
-    public function setEvaluators($evaluators)
+    public function setEvaluators(array $evaluators)
     {
-        $this->evaluators = $evaluators;
+        $this->evaluators = array();
+        foreach ($evaluators as $evaluator) {
+            $this->addEvaluator($evaluator);
+        }
     }
 
 
@@ -95,9 +121,13 @@ class ReportBuilder
     }
 
 
+    /**
+     * @param FormatterInterface $formatter
+     * @return mixed
+     */
     public function format(FormatterInterface $formatter)
     {
-        $formatter->setReporters($this->reporters);
+        $formatter->setReporter($this->reporter);
         return $formatter->format();
     }
 

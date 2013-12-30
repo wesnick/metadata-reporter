@@ -43,7 +43,7 @@ class MetadataReporterCommand extends Command
         ));
 
         $builder->setEvaluators(array(
-            new \Wesnick\MetadataReporter\Evaluator\BasicPageInfoEvaluator(),
+            new \Wesnick\MetadataReporter\Evaluator\BasePageInfoEvaluator(),
             new \Wesnick\MetadataReporter\Evaluator\RobotsMetaEvaluator(),
 
         ));

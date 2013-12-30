@@ -6,9 +6,10 @@
 namespace Wesnick\MetadataReporter\Formatter;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Console\Helper\TableHelper;
 use Symfony\Component\Console\Output\OutputInterface;
+use Wesnick\MetadataReporter\Reporter\Reporter;
+use Wesnick\MetadataReporter\Reporter\ReportInterface;
 
 class SymfonyConsoleFormatter implements FormatterInterface
 {
@@ -24,9 +25,9 @@ class SymfonyConsoleFormatter implements FormatterInterface
     protected $table;
 
     /**
-     * @var ArrayCollection
+     * @var Reporter
      */
-    protected $reporters;
+    protected $reporter;
 
 
     function __construct(OutputInterface $output, TableHelper $table)
@@ -35,14 +36,38 @@ class SymfonyConsoleFormatter implements FormatterInterface
         $this->table = $table;
     }
 
-    public function setReporters(ArrayCollection $reporters)
+    public function setReporter(Reporter $reporter)
     {
-        $this->reporters = $reporters;
+        $this->reporter = $reporter;
     }
 
     public function format()
     {
-        $this->output->writeln("Done doing symfony");
+
+        $rows = array();
+
+        foreach ($this->reporter->getCategories() as $category) {
+
+            $reporters = $this->reporter->getReportersForCategory($category);
+
+            /** @var $reporter ReportInterface */
+            foreach ($reporters as $reporter) {
+                $rows[] = array(
+                    $category,
+                    $reporter->getLabel(),
+                    $reporter->getDescription(),
+                    $reporter->getLevel(),
+                    $reporter->getUri(),
+                );
+            }
+
+        }
+
+        $this->table
+            ->setHeaders(array('Category', 'Label', 'Description', 'Level', 'URI'))
+            ->setRows($rows)
+        ;
+        $this->table->render($this->output);
 
     }
 

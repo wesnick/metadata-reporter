@@ -1,7 +1,4 @@
 <?php
-/**
- * @file MetaTag.php
- */
 
 namespace Wesnick\MetadataReporter\Metadata;
 

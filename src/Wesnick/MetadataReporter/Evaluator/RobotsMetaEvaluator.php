@@ -1,7 +1,4 @@
 <?php
-/**
- * @file RobotsMetaEvaluator.php
- */
 
 namespace Wesnick\MetadataReporter\Evaluator;
 
@@ -9,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\ExpressionBuilder;
 use Wesnick\MetadataReporter\Metadata\MetaDatumInterface;
-use Wesnick\MetadataReporter\Reporter\Reporter;
 
 class RobotsMetaEvaluator extends BaseEvaluator
 {
@@ -33,28 +29,22 @@ class RobotsMetaEvaluator extends BaseEvaluator
     );
 
     /**
-     * @param $uri
+     * @param string $uri
      * @param ArrayCollection $metadata
      */
     public function evaluate($uri, ArrayCollection $metadata)
     {
-
         $metas = $this->getRobotsMetadata($metadata);
 
         switch ($meta_count = count($metas)) {
             case 0:
-                $this->reporters->add(new Reporter("Robots not specified in metatags", "Serach Bots will index this page", $uri, array('robots')));
-                break;
-            case 1:
-                $this->reporters->add(new Reporter("Robots specified in metatags", "Serach Bots will index this page", $uri, array('robots'), array('metadata' => array($metas->first()))));
+                $this->reporter->warn("Robots not specified in metatags", "Serach Bots will index this page", $uri, array('robots'));
                 break;
             case $meta_count > 1:
-                $this->reporters->add(new Reporter("More than one robots directive specified in metatags", "First One Wins", $uri, array('robots'), array('metadata' => array($metas->first()))));
+                $this->reporter->warn("More than one robots directive specified in metatags", "First One Wins", $uri, array('robots'), array('metadata' => array($metas->first())));
                 break;
         }
 
-//        $reporter = new Reporter("Robots not specified in metatags", "Serach Bots will index this page", $uri, array('robots'));
-//        $this->reporters->add($reporter);
 
     }
 
@@ -62,15 +52,11 @@ class RobotsMetaEvaluator extends BaseEvaluator
     private function getRobotsMetadata(ArrayCollection $metadata)
     {
         $builder = new ExpressionBuilder();
-//        $expression = $builder->contains('categories', 'robots');
         $expression = $builder->andX($builder->eq('name', 'robots'), $builder->eq('documentLocation', MetaDatumInterface::CONTENT_HEAD));
         $criteria = new Criteria($expression);
         $found = $metadata->matching($criteria);
 
         return $found;
-
-
-
     }
 
 
