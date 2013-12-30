@@ -4,6 +4,7 @@ namespace Wesnick\MetadataReporter\Command;
 
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,22 +18,17 @@ class MetadataReporterCommand extends Command
         $this
             ->setName('wesnick:metadata:evaluate')
             ->setDescription('Fetch and display metadata evaluation from a given URI')
-            ->addOption("uri", null, InputOption::VALUE_REQUIRED, "URI to fetch metadata from")
+            ->addArgument("uri", InputArgument::REQUIRED, "URI to fetch metadata from")
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $uri = $input->getOption('uri');
+        $uri = $input->getArgument('uri');
 
-        // @TODO: a temporary low internet usage solution
-//        $browser = new \Buzz\Browser();
-//        $response = $this->browser->get($uri);
-
-        /** @var $response \Buzz\Message\Response */
-        $response = unserialize(file_get_contents('/home/wes/www/metadata-reporter/scratch/nytimes.response'));
-
+        $browser = new \Buzz\Browser();
+        $response = $browser->get($uri);
 
         $builder = new ReportBuilder();
 
@@ -45,11 +41,12 @@ class MetadataReporterCommand extends Command
         $builder->setEvaluators(array(
             new \Wesnick\MetadataReporter\Evaluator\BasePageInfoEvaluator(),
             new \Wesnick\MetadataReporter\Evaluator\RobotsMetaEvaluator(),
+            new \Wesnick\MetadataReporter\Evaluator\AuthorshipEvaluator()
 
         ));
 
 
-        $builder->doReport('http://localhost/test', $response->getHeaders(), $response->getContent());
+        $builder->doReport($uri, $response->getHeaders(), $response->getContent());
 
         $formatter = new SymfonyConsoleFormatter($output, $this->getHelperSet()->get('table'));
         $builder->format($formatter);

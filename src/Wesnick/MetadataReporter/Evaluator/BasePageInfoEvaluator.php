@@ -9,6 +9,7 @@ namespace Wesnick\MetadataReporter\Evaluator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Wesnick\MetadataReporter\Metadata\DocTitle;
 use Wesnick\MetadataReporter\Metadata\MetaDatumInterface;
+use Wesnick\MetadataReporter\Metadata\MetaTag;
 
 class BasePageInfoEvaluator extends BaseEvaluator
 {
@@ -35,6 +36,8 @@ class BasePageInfoEvaluator extends BaseEvaluator
         $this->evaluateTitle();
 
         $this->evaluateDescription();
+
+        $this->evaluateMiscellaneousTags();
 
     }
 
@@ -117,6 +120,31 @@ EOF;
         }
 
 
+    }
+
+    private function evaluateMiscellaneousTags()
+    {
+        static $misc = array(
+            'keywords' => 'Keywords have limited relevance',
+            'revisit-after' => 'Specifies an interval for spiders to reindex your content',
+            'language' => 'Language indicator',
+            'author' => 'Author metatag does not have much meaning',
+            'web_author' => 'This tag has little meaning',
+            'refresh' => 'Refresh tag can be annoying for your users',
+            'generator' => 'Generator metatags typically indicate the Software used to generate the web page',
+
+        );
+
+        foreach ($misc as $tag => $desc) {
+            $meta = $this->getMetaTagFor($this->metadata, $tag);
+
+            if ($meta->count()) {
+                /** @var $metaTag MetaTag */
+                $metaTag = $meta->first();
+                $this->reporter->info(sprintf("Found MetaTag: %s. %s", $tag, $desc), $metaTag->getValue(), $this->uri, array('base'), array('metadata' => array($metaTag)));
+            }
+
+        }
     }
 
 
